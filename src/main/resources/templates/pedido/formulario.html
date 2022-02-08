@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head th:replace="~{base :: head}">
+    <title>Formulario de cadastro</title>
+</head>
+<body>
+    <div th:replace="~{base :: logo}"></div>
+    <div class="container">
+
+        <div th:replace="~{base :: div-principal('Novo pedido' , 'Cadastre um novo pedido no sistema')}"></div>
+
+        <div class="card mt-3">
+            <form th:object="${novoPedidoDto}" class="card-body" action="/pedido/novo" method="POST">
+                <div class="form-group">
+                    <label for="nomeProduto">Produto</label>
+                    <input th:field="*{nomeProduto}" class="form-control" th:errorclass="is-invalid"  placeholder="nome do produto"/>
+                    <small>Informa qual o nome do produto.</small>
+                    <div class="invalid-feedback" th:errors="*{nomeProduto}">
+                        Nome do produto é obrigatório
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="urlProduto">Url</label>
+                    <input th:field="*{urlProduto}" class="form-control" th:errorclass="is-invalid" placeholder="url do produto"/>
+                    <small>Procure em um site o produto e cole aqui para conseguir compradores.</small>
+                    <div class="invalid-feedback" th:errors="*{urlProduto}">
+                        Url do produto é obrigatório
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="urlImagem">Imagem</label>
+                    <input th:field="*{urlImagem}" th:errorclass="'is-invalid'" class="form-control"  placeholder="url da imagem"/>
+                    <small>Copie a url de uma boa imagem do produto e cole aqui para ajudar a conseguir
+                        compradores.</small>
+                    <div class="invalid-feedback" th:errors="*{urlImagem}">
+                        Url da imagem é obrigatório
+                    </div>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label for="descricao">Descrição</label>
+                    <textarea th:field="*{descricao}" class="form-control"
+                              placeholder="Adicione detalhes importantes para ajudar o comprador"></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Cadastrar</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
