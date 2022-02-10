@@ -3,10 +3,14 @@ package br.com.pehenmo.mvc.mudi.controller;
 import br.com.pehenmo.mvc.mudi.model.Pedido;
 import br.com.pehenmo.mvc.mudi.model.StatusPedido;
 import br.com.pehenmo.mvc.mudi.repository.PedidoRepository;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @Controller
@@ -22,23 +26,14 @@ public class HomeController {
     @GetMapping
     public String home(Model model){
 
-        //ModelAndView mv = new ModelAndView("home");
-        //mv.addObject("pedidos", pedidos);
+        Sort sort = Sort.by("dataEntrega").descending();
+        PageRequest page = PageRequest.of(0, 10, sort);
 
-        List<Pedido> pedidos = repository.findAll();
+
+        List<Pedido> pedidos = repository.findByStatus(StatusPedido.ENTREGUE, page);
 
         model.addAttribute("pedidos", pedidos);
         model.addAttribute("status", "home");
-        return "home";
-    }
-
-    @RequestMapping(value = "/{status}", method = RequestMethod.GET)
-    public String porStatus(@PathVariable("status") String status, Model model){
-
-        List<Pedido> pedidos = repository.findByStatus(StatusPedido.valueOf(status.toUpperCase()));
-
-        model.addAttribute("pedidos", pedidos);
-        model.addAttribute("status", status.toLowerCase());
         return "home";
     }
 

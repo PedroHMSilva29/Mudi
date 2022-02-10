@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml" xmlns="http://www.w3.org/1999/html"
+      xmlns:v-bind="http://www.w3.org/1999/xhtml" xmlns:v-on="http://www.w3.org/1999/xhtml">
+<head th:replace="~{base :: head}">
+    <title>Home Ofertas</title>
+</head>
+<body onload="onLoad()">
+
+    <div th:replace="~{base :: logo}"></div>
+    <div class="container" id="ofertas">
+
+        <div th:replace="~{base :: div-principal('Oferta de Pedidos' , 'Dê uma oferta para algum produto do seu interesse')}"></div>
+
+        <div class="card mb-4" v-for="pedido in pedidos">
+            <div class="card-body">
+
+                <h4>
+                    <div role="alert" class="card-title alert alert-dark">{{pedido.nomeProduto}}</div>
+                </h4>
+
+
+                <div class="row">
+                    <div class="col-12 col-sm-8 mb-3">
+                        <div>Produto: <a v-bind:href="pedido.urlProduto">{{pedido.nomeProduto}} </a></div>
+
+                        <div class="mt-2 mb-2">Descricao: </div>
+                        <div><textarea readonly rows="5" class="form-control mb-3">{{pedido.descricao}}</textarea></div>
+
+                        <div class="row">
+                            <div class="col-md-6">Valor: <input v-bind:class="{'is-invalid':pedido.erros.valor!==''}" class="form-control" v-model="pedido.valorNegociado" placeholder="valor" />
+                                <div v-if="pedido.erros.valor" class="invalid-feedback">{{pedido.erros.valor}}</div>
+                            </div>
+
+                            <div class="col-md-6 mb-2">Data Entrega: <input v-bind:class="{'is-invalid':pedido.erros.dataEntrega!==''}" class="form-control" v-model="pedido.dataEntrega" placeholder="data entrega" />
+                                <div v-if="pedido.erros.dataEntrega" class="invalid-feedback">{{pedido.erros.dataEntrega}}</div>
+                            </div>
+                        </div>
+
+                        <div>
+                            Cometário:
+                            <textarea v-model="pedido.comentario" rows="5" class="form-control mb-3" placeholder="Faça um comentário"></textarea>
+                        </div>
+
+
+
+                    </div>
+
+                    <div class="col-12 col-sm-4 align-self-center">
+                        <button v-if="pedido.ofertaEnviada" class="btn btn-success mb-3">Oferta Enviada</button>
+                        <button  v-else v-on:click="enviarOferta(pedido)" class="btn btn-primary mb-3">Enviar Oferta</button>
+                        <div><img class="img-thumbnail" v-bind:src="pedido.urlImagem"/></div>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function onLoad(){
+            var app = new Vue({
+                el : '#ofertas',
+                data : {
+                    pedidos: []
+                },
+                mounted () {
+                    axios
+                        .get('http://localhost:8080/api/pedidos/aguardando')
+                        .then(response => {
+                            response.data.forEach(pedido => {
+                                pedido.ofertaEnviada = false;
+                                pedido.erros = {
+                                valor: '',
+                                dataEntrega: ''
+                              };
+
+                            })
+                            this.pedidos = response.data;
+
+                        })
+                },
+                methods: {
+                     enviarOferta: function (pedido){
+
+                       pedido.erros = {
+                            valor: '',
+                            dataEntrega: ''
+                       };
+
+                       axios
+                        .post('http://localhost:8080/api/ofertas',{
+                            idPedido:pedido.id,
+                            valor:pedido.valorNegociado,
+                            dataEntrega:pedido.dataEntrega,
+                            comentario:pedido.comentario
+                        })
+                        .then(response=>pedido.ofertaEnviada = true)
+                        .catch(error =>{
+                            error.response.data.errors.forEach(error => {
+                                pedido.erros[error.field] = error.defaultMessage;
+                            })
+                        })
+                     }
+                }
+            });
+        }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</body>
+</html>

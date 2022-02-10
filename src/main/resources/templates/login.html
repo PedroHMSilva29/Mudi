@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml" xmlns="http://www.w3.org/1999/html">
+<head th:replace="~{base :: head}">
+    <title>Home</title>
+</head>
+<body>
+
+    <div th:replace="~{base :: logo}"></div>
+    <div class="container">
+
+        <div th:replace="~{base :: div-principal('Login' , 'Realize a autenticação para visualizar os pedidos')}"></div>
+
+        <div class="card mb-3">
+            <form th:action="@{/login}" class="card-body" method="post">
+                <div class="form-group">
+                    <label for="username">Usuário</label>
+                    <input name="username" class="form-control"  placeholder="nome do usuário"/>
+                </div>
+
+                <div class="form-group mb-3 mt-3">
+                    <label for="password">Senha</label>
+                    <input type="password" name="password" class="form-control"  placeholder="senha"/>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Logar</button>
+            </form>
+
+        </div>
+
+
+
+    </div>
+</body>
+</html>
